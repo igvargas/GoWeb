@@ -1,8 +1,8 @@
 package handler
 
 import (
-	usuarios "github.com/extmatperez/meli_bootcamp2/7_goweb2/internal/usuarios"
 	"github.com/gin-gonic/gin"
+	usuario "github.com/igvargas/GoWeb/internal/usuarios"
 )
 
 type request struct {
@@ -16,10 +16,10 @@ type request struct {
 }
 
 type Usuario struct {
-	service usuarios.Service
+	service usuario.Service
 }
 
-func NewUsuario(ser usuarios.Service) *Usuario {
+func NewUsuario(ser usuario.Service) *Usuario {
 	return &Usuario{service: ser}
 }
 

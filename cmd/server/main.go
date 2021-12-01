@@ -1,16 +1,17 @@
 package main
 
 import (
-	usuarios "github.com/extmatperez/meli_bootcamp2/7_goweb2/internal/usuarios"
 	"github.com/gin-gonic/gin"
+	u "github.com/igvargas/GoWeb/cmd/server/handler"
+	usuario "github.com/igvargas/GoWeb/internal/usuarios"
 )
 
 func main() {
 	router := gin.Default()
 
-	repo := usuarios.NewRepository()
-	service := usuarios.NewService(repo)
-	controller := usuarios.NewUsuario(service)
+	repo := usuario.NewRepository()
+	service := usuario.NewService(repo)
+	controller := u.NewUsuario(service)
 
 	router.GET("/usuarios/get", controller.GetAll())
 	router.POST("/usuarios/add", controller.Store())
