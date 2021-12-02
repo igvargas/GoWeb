@@ -3,7 +3,7 @@ package internal
 import (
 	"fmt"
 
-	store "github.com/igvargas/GoWeb/pkg"
+	"github.com/igvargas/GoWeb/pkg/store"
 )
 
 type Usuario struct {
@@ -38,7 +38,10 @@ func NewRepository(db store.Store) Repository {
 }
 
 func (repo *repository) GetAll() ([]Usuario, error) {
-	repo.db.Read(&usuarios)
+	err := repo.db.Read(&usuarios)
+	if err != nil {
+		return nil, err
+	}
 	return usuarios, nil
 }
 
@@ -58,7 +61,11 @@ func (repo *repository) Store(id int, nombre string, apellido string, email stri
 }
 
 func (repo *repository) LastId() (int, error) {
-	repo.db.Read(&usuarios)
+	err := repo.db.Read(&usuarios)
+	if err != nil {
+		return 0, err
+	}
+
 	if len(usuarios) == 0 {
 		return 0, nil
 	}

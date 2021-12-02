@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/igvargas/GoWeb/cmd/server/handler"
 	usuario "github.com/igvargas/GoWeb/internal/usuarios"
-	store "github.com/igvargas/GoWeb/pkg"
+	store "github.com/igvargas/GoWeb/pkg/store"
 	"github.com/joho/godotenv"
 )
 

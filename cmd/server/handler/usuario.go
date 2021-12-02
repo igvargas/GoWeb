@@ -60,13 +60,13 @@ func (controller *Usuario) Store() gin.HandlerFunc {
 		err := ctx.ShouldBindJSON(&usu)
 
 		if err != nil {
-			ctx.String(400, "Hubo un error al querer cargar una persona %v", err)
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprintf("Hubo un error al querer cargar una persona %v", err)))
 		} else {
 			response, err := controller.service.Store(usu.Nombre, usu.Apellido, usu.Email, usu.Edad, usu.Altura, usu.Activo, usu.FechaCreacion)
 			if err != nil {
-				ctx.String(400, "No se pudo cargar la persona %v", err)
+				ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprintf("No se pudo cargar la persona %v", err)))
 			} else {
-				ctx.JSON(200, response)
+				ctx.JSON(200, web.NewResponse(200, response, ""))
 			}
 		}
 
@@ -85,18 +85,18 @@ func (controller *Usuario) Update() gin.HandlerFunc {
 		id, err := strconv.Atoi(ctx.Param("id"))
 
 		if err != nil {
-			ctx.String(400, "El id es invalido")
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprintf("El id es invalido")))
 		}
 
 		err = ctx.ShouldBindJSON(&usr)
 		if err != nil {
-			ctx.String(400, "Error en el body")
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprintf("Error en el body")))
 		} else {
 			usuarioActualizado, err := controller.service.Update(int(id), usr.Nombre, usr.Apellido, usr.Email, usr.Edad, usr.Altura, usr.Activo, usr.FechaCreacion)
 			if err != nil {
-				ctx.JSON(400, err.Error())
+				ctx.JSON(400, web.NewResponse(400, nil, err.Error()))
 			} else {
-				ctx.JSON(200, usuarioActualizado)
+				ctx.JSON(200, web.NewResponse(200, usuarioActualizado, ""))
 			}
 		}
 
@@ -113,21 +113,21 @@ func (controller *Usuario) UpdateNombre() gin.HandlerFunc {
 
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.String(400, "El id es invalido")
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprintf("El id es invalido")))
 		}
 		err = ctx.ShouldBindJSON(&usr)
 		if err != nil {
-			ctx.String(400, "Error en el body")
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprintf("Error en el body")))
 		} else {
 			if usr.Nombre == "" {
-				ctx.String(404, "El nombre no puede estar vacío")
+				ctx.JSON(404, web.NewResponse(400, nil, fmt.Sprintf("El nombre no puede estar vacío")))
 				return
 			}
 			usuarioActualizado, err := controller.service.UpdateNombre(int(id), usr.Nombre)
 			if err != nil {
-				ctx.JSON(400, err.Error())
+				ctx.JSON(400, web.NewResponse(400, nil, err.Error()))
 			} else {
-				ctx.JSON(200, usuarioActualizado)
+				ctx.JSON(200, web.NewResponse(200, usuarioActualizado, ""))
 			}
 		}
 	}
@@ -141,13 +141,13 @@ func (controller *Usuario) Delete() gin.HandlerFunc {
 		}
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
-			ctx.String(400, "El id es invalido")
+			ctx.JSON(400, web.NewResponse(400, nil, fmt.Sprintf("El id es invalido")))
 		}
 		err = controller.service.Delete(int(id))
 		if err != nil {
-			ctx.JSON(400, err.Error())
+			ctx.JSON(400, web.NewResponse(400, nil, err.Error()))
 		} else {
-			ctx.String(200, "La persona %d ha sido eliminada", id)
+			ctx.JSON(200, web.NewResponse(200, nil, fmt.Sprintf("La persona %d ha sido eliminada", id)))
 		}
 	}
 }
