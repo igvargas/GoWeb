@@ -1,6 +1,10 @@
 package internal
 
-import "fmt"
+import (
+	"fmt"
+
+	store "github.com/igvargas/GoWeb/pkg"
+)
 
 type Usuario struct {
 	ID            int     `json:"id"`
@@ -25,42 +29,79 @@ type Repository interface {
 	Delete(id int) error
 }
 
-type repository struct{}
+type repository struct {
+	db store.Store
+}
 
-func NewRepository() Repository {
-	return &repository{}
+func NewRepository(db store.Store) Repository {
+	return &repository{db}
 }
 
 func (repo *repository) GetAll() ([]Usuario, error) {
+	repo.db.Read(&usuarios)
 	return usuarios, nil
 }
 
 func (repo *repository) Store(id int, nombre string, apellido string, email string, edad int, altura float64, activo bool, fecha_creacion string) (Usuario, error) {
+	repo.db.Read(&usuarios)
+
 	usr := Usuario{id, nombre, apellido, email, edad, altura, activo, fecha_creacion}
-	lastID = id
+
 	usuarios = append(usuarios, usr)
+	err := repo.db.Write(usuarios)
+
+	if err != nil {
+		return Usuario{}, err
+	}
+
 	return usr, nil
 }
 
 func (repo *repository) LastId() (int, error) {
+	repo.db.Read(&usuarios)
+	if len(usuarios) == 0 {
+		return 0, nil
+	}
+
+	lastID := usuarios[len(usuarios)-1].ID
 	return lastID, nil
 }
 
 func (repo *repository) Update(id int, nombre, apellido string, email string, edad int, altura float64, activo bool, fecha_creacion string) (Usuario, error) {
+	err := repo.db.Read(&usuarios)
+	if err != nil {
+		return Usuario{}, err
+	}
+
 	usr := Usuario{id, nombre, apellido, email, edad, altura, activo, fecha_creacion}
 	for i, v := range usuarios {
 		if v.ID == id {
 			usuarios[i] = usr
+			err := repo.db.Write(usuarios)
+
+			if err != nil {
+				return Usuario{}, err
+			}
 			return usr, nil
 		}
 	}
+
 	return Usuario{}, fmt.Errorf("El usuario %d no existe", id)
 }
 
 func (repo *repository) UpdateNombre(id int, nombre string) (Usuario, error) {
+	err := repo.db.Read(&usuarios)
+	if err != nil {
+		return Usuario{}, err
+	}
 	for i, v := range usuarios {
 		if v.ID == id {
 			usuarios[i].Nombre = nombre
+			err := repo.db.Write(usuarios)
+
+			if err != nil {
+				return Usuario{}, err
+			}
 			return usuarios[i], nil
 		}
 	}
@@ -69,12 +110,17 @@ func (repo *repository) UpdateNombre(id int, nombre string) (Usuario, error) {
 }
 
 func (repo *repository) Delete(id int) error {
+	err := repo.db.Read(&usuarios)
+	if err != nil {
+		return err
+	}
 	index := 0
 	for i, v := range usuarios {
 		if v.ID == id {
 			index = i
 			usuarios = append(usuarios[:index], usuarios[index+1:]...)
-			return nil
+			err := repo.db.Write(usuarios)
+			return err
 		}
 	}
 	return fmt.Errorf("La persona %d no existe", id)

@@ -1,15 +1,26 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/igvargas/GoWeb/cmd/server/handler"
 	usuario "github.com/igvargas/GoWeb/internal/usuarios"
+	store "github.com/igvargas/GoWeb/pkg"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("No se pudo abrir el archivo .env")
+	}
+
 	router := gin.Default()
 
-	repo := usuario.NewRepository()
+	db := store.New(store.FileType, "./usuarioSalid.json")
+
+	repo := usuario.NewRepository(db)
 	service := usuario.NewService(repo)
 	controller := handler.NewUsuario(service)
 

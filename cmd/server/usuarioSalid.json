@@ -1,0 +1,62 @@
+[
+ {
+  "id": 2,
+  "nombre": "josefa",
+  "apellido": "Maylor",
+  "email": "lmaylor0@dagondesign.com",
+  "edad": 30,
+  "altura": 177.1,
+  "activo": false,
+  "fecha_creacion": "8/20/2021"
+ },
+ {
+  "id": 3,
+  "nombre": "Lenard",
+  "apellido": "Maylor",
+  "email": "lmaylor0@dagondesign.com",
+  "edad": 30,
+  "altura": 177.1,
+  "activo": false,
+  "fecha_creacion": "8/20/2021"
+ },
+ {
+  "id": 4,
+  "nombre": "Lenard",
+  "apellido": "Maylor",
+  "email": "lmaylor0@dagondesign.com",
+  "edad": 30,
+  "altura": 177.1,
+  "activo": false,
+  "fecha_creacion": "8/20/2021"
+ },
+ {
+  "id": 1,
+  "nombre": "josefa",
+  "apellido": "Maylor",
+  "email": "lmaylor0@dagondesign.com",
+  "edad": 30,
+  "altura": 177.1,
+  "activo": false,
+  "fecha_creacion": "8/20/2021"
+ },
+ {
+  "id": 2,
+  "nombre": "Lenard",
+  "apellido": "Maylor",
+  "email": "lmaylor0@dagondesign.com",
+  "edad": 30,
+  "altura": 177.1,
+  "activo": false,
+  "fecha_creacion": "8/20/2021"
+ },
+ {
+  "id": 3,
+  "nombre": "Lenard",
+  "apellido": "Maylor",
+  "email": "lmaylor0@dagondesign.com",
+  "edad": 30,
+  "altura": 177.1,
+  "activo": false,
+  "fecha_creacion": "8/20/2021"
+ }
+]

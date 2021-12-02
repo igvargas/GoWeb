@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	usuario "github.com/igvargas/GoWeb/internal/usuarios"
+	"github.com/igvargas/GoWeb/pkg/web"
 )
 
 type request struct {
@@ -26,13 +29,21 @@ func NewUsuario(ser usuario.Service) *Usuario {
 }
 
 func (usr *Usuario) GetAll() gin.HandlerFunc {
+
 	return func(ctx *gin.Context) {
+		/////////
+		ok := ValidarToken(ctx)
+		if !ok {
+			return
+		}
+		/////////
 		usuarios, err := usr.service.GetAll()
 
 		if err != nil {
-			ctx.String(400, "Hubo un error %v", err)
+			ctx.JSON(200, web.NewResponse(400, nil, fmt.Sprintf("Hubo un error %v", err)))
+			//ctx.String(400, "Hubo un error %v", err)
 		} else {
-			ctx.JSON(200, usuarios)
+			ctx.JSON(200, web.NewResponse(200, usuarios, ""))
 		}
 	}
 }
@@ -40,6 +51,10 @@ func (usr *Usuario) GetAll() gin.HandlerFunc {
 func (controller *Usuario) Store() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
+		ok := ValidarToken(ctx)
+		if !ok {
+			return
+		}
 		var usu request
 
 		err := ctx.ShouldBindJSON(&usu)
@@ -60,6 +75,12 @@ func (controller *Usuario) Store() gin.HandlerFunc {
 
 func (controller *Usuario) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
+		ok := ValidarToken(ctx)
+		if !ok {
+			return
+		}
+
 		var usr request
 		id, err := strconv.Atoi(ctx.Param("id"))
 
@@ -84,6 +105,10 @@ func (controller *Usuario) Update() gin.HandlerFunc {
 
 func (controller *Usuario) UpdateNombre() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		ok := ValidarToken(ctx)
+		if !ok {
+			return
+		}
 		var usr request
 
 		id, err := strconv.Atoi(ctx.Param("id"))
@@ -110,6 +135,10 @@ func (controller *Usuario) UpdateNombre() gin.HandlerFunc {
 
 func (controller *Usuario) Delete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		ok := ValidarToken(ctx)
+		if !ok {
+			return
+		}
 		id, err := strconv.Atoi(ctx.Param("id"))
 		if err != nil {
 			ctx.String(400, "El id es invalido")
@@ -121,4 +150,21 @@ func (controller *Usuario) Delete() gin.HandlerFunc {
 			ctx.String(200, "La persona %d ha sido eliminada", id)
 		}
 	}
+}
+
+func ValidarToken(ctx *gin.Context) bool {
+	token := ctx.GetHeader("token")
+	tokenENV := os.Getenv("TOKEN")
+	if token == "" {
+		ctx.JSON(200, web.NewResponse(400, nil, "Falta token"))
+		//ctx.String(400, "Falta token")
+		return false
+	}
+
+	if token != tokenENV {
+		ctx.JSON(200, web.NewResponse(404, nil, "Token incorrecto"))
+		//ctx.String(404, "Token incorrecto")
+		return false
+	}
+	return true
 }
