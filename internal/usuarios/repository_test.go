@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	store "github.com/igvargas/GoWeb/pkg/store"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -88,3 +89,20 @@ func TestUpdateNameError(t *testing.T) {
 // 	// Assert
 // 	assert.True(t, store.useUpdateNombre)
 // }
+
+func TestGetAllRepositoryMock(t *testing.T) {
+	// Arrange
+	dataByte := []byte(usr)
+	var usrExpected []Usuario
+	json.Unmarshal(dataByte, &usrExpected)
+
+	dbMock := store.Mock{Data: dataByte}
+	storeStub := store.FileStore{Mock: &dbMock}
+	repo := NewRepository(&storeStub)
+
+	// Act
+	misUser, _ := repo.GetAll()
+
+	// Assert
+	assert.Equal(t, usrExpected, misUser)
+}
