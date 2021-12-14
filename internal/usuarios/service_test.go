@@ -158,3 +158,21 @@ func TestServiceDelete(t *testing.T) {
 	// Assert
 	assert.Nil(t, err)
 }
+
+func TestServiceDeleteError(t *testing.T) {
+	// Arrange
+	dataByte := []byte(user)
+	var userExpected []Usuario
+	json.Unmarshal(dataByte, &userExpected)
+
+	dbMock := store.Mock{Data: dataByte}
+	storeStub := store.FileStore{Mock: &dbMock}
+	repo := NewRepository(&storeStub)
+	service := NewService(repo)
+
+	// Act
+	err := service.Delete(12)
+
+	// Assert
+	assert.Error(t, err)
+}

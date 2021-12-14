@@ -28,6 +28,15 @@ func NewUsuario(ser usuario.Service) *Usuario {
 	return &Usuario{service: ser}
 }
 
+// ListUsers godoc
+// @Summary List usuarios
+// @Tags Usuario
+// @Description get usuarios
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Success 200 {object} web.Response
+// @Router /usuarios/get [get]
 func (usr *Usuario) GetAll() gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {
@@ -48,6 +57,16 @@ func (usr *Usuario) GetAll() gin.HandlerFunc {
 	}
 }
 
+// StoreUsers godoc
+// @Summary Store usuario
+// @Tags Usuario
+// @Description store usuario
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Param persona body request true "Usuario to store"
+// @Success 200 {object} web.Response
+// @Router /usuarios/add [post]
 func (controller *Usuario) Store() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
@@ -73,6 +92,16 @@ func (controller *Usuario) Store() gin.HandlerFunc {
 	}
 }
 
+// UpdateUser godoc
+// @Summary Update usuario
+// @Tags Usuario
+// @Description update usuario
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Param persona body request true "Usuario update to store"
+// @Success 200 {object} web.Response
+// @Router /usuarios/:id [put]
 func (controller *Usuario) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
@@ -103,6 +132,16 @@ func (controller *Usuario) Update() gin.HandlerFunc {
 	}
 }
 
+// UpdateUserName godoc
+// @Summary Update nombre usuario
+// @Tags Usuario
+// @Description update nombre usuario
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Param persona body request true "Usuario update nombre to store"
+// @Success 200 {object} web.Response
+// @Router /personas/:id [patch]
 func (controller *Usuario) UpdateNombre() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ok := ValidarToken(ctx)
@@ -133,6 +172,16 @@ func (controller *Usuario) UpdateNombre() gin.HandlerFunc {
 	}
 }
 
+// DeleteUser godoc
+// @Summary Delete usuario
+// @Tags Usuario
+// @Description delete usuario
+// @Accept  json
+// @Produce  json
+// @Param token header string true "token"
+// @Param persona body request true "Delete Usuario"
+// @Success 200 {object} web.Response
+// @Router /usuarios/:id [Delete]
 func (controller *Usuario) Delete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ok := ValidarToken(ctx)
