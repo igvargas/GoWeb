@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/igvargas/GoWeb/internal/models"
 	"github.com/igvargas/GoWeb/pkg/store"
 	"github.com/stretchr/testify/assert"
 )
@@ -176,4 +177,23 @@ func TestServiceDeleteError(t *testing.T) {
 
 	// Assert
 	assert.Error(t, err)
+}
+
+func TestStoreServiceSQL(t *testing.T) {
+	newUser := models.Usuario{
+		Nombre:        "jose",
+		Apellido:      "lopez",
+		Email:         "jlopez@hotmail.com",
+		Edad:          41,
+		Altura:        1.68,
+		Activo:        true,
+		FechaCreacion: "8/05/1966",
+	}
+
+	repo := NewRepositorySQL()
+	service := NewServiceSQL(repo)
+
+	usuarioCreado, _ := service.Store(newUser.Nombre, newUser.Apellido, newUser.Email, newUser.Edad, newUser.Altura, newUser.Activo, newUser.FechaCreacion)
+
+	assert.Equal(t, newUser.Nombre, usuarioCreado.Nombre)
 }
