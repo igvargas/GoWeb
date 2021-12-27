@@ -18,7 +18,6 @@ type Usuario struct {
 }
 
 var usuarios []Usuario
-var lastID int
 
 type Repository interface {
 	GetAll() ([]Usuario, error)

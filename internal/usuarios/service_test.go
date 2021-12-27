@@ -15,21 +15,23 @@ var user string = `[
 
 func TestGetAllServiceMock(t *testing.T) {
 	// Arrange
-	dataByte := []byte(user)
-	var userExpected []Usuario
-	json.Unmarshal(dataByte, &userExpected)
+	// dataByte := []byte(user)
+	// var userExpected []Usuario
+	// json.Unmarshal(dataByte, &userExpected)
+	sliceDeBytes, _ := json.Marshal(sliceDeUsuarios)
 
-	dbMock := store.Mock{Data: dataByte}
-	storeStub := store.FileStore{Mock: &dbMock}
+	dbMock := store.Mock{Data: sliceDeBytes}
+	storeStub := store.FileStore{FileName: "", Mock: &dbMock}
+
 	repo := NewRepository(&storeStub)
-
 	service := NewService(repo)
 
 	// Act
-	misUser, _ := service.GetAll()
+	resul, err := service.GetAll()
 
 	// Assert
-	assert.Equal(t, userExpected, misUser)
+	assert.Nil(t, err)
+	assert.True(t, len(resul) == 2)
 }
 
 func TestGetAllServiceMockError(t *testing.T) {
@@ -37,17 +39,16 @@ func TestGetAllServiceMockError(t *testing.T) {
 	errorExpected := errors.New("No hay datos en el Mock")
 
 	dbMock := store.Mock{Err: errorExpected}
-	storeStub := store.FileStore{Mock: &dbMock}
-	repo := NewRepository(&storeStub)
+	storeStub := store.FileStore{FileName: "", Mock: &dbMock}
 
+	repo := NewRepository(&storeStub)
 	service := NewService(repo)
 
 	// Act
-	misUser, errorRecibido := service.GetAll()
+	_, errorRecibido := service.GetAll()
 
 	// Assert
-	assert.Equal(t, errorExpected, errorRecibido)
-	assert.Nil(t, misUser)
+	assert.Error(t, errorRecibido)
 }
 
 func TestStoreServiceMock(t *testing.T) {
