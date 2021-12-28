@@ -1,9 +1,11 @@
 package internal
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/igvargas/GoWeb/internal/models"
 	"github.com/igvargas/GoWeb/pkg/store"
@@ -196,4 +198,32 @@ func TestStoreServiceSQL(t *testing.T) {
 	usuarioCreado, _ := service.Store(newUser.Nombre, newUser.Apellido, newUser.Email, newUser.Edad, newUser.Altura, newUser.Activo, newUser.FechaCreacion)
 
 	assert.Equal(t, newUser.Nombre, usuarioCreado.Nombre)
+}
+
+func TestGetFullDataServiceSQL(t *testing.T) {
+	repo := NewRepositorySQL()
+
+	service := NewServiceSQL(repo)
+
+	misUsuarios, err := service.GetFullData()
+	assert.Nil(t, err)
+	assert.Equal(t, "cordoba", misUsuarios[0].Domicilio.NombreCiudad)
+	assert.True(t, len(misUsuarios) > 0)
+}
+
+func TestGetOneContextServiceSQL(t *testing.T) {
+	usuarioNuevo := models.Usuario{
+		Nombre: "jose",
+	}
+
+	repo := NewRepositorySQL()
+
+	service := NewServiceSQL(repo)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	usuarioCargado, err := service.GetOneWithContext(ctx, 2)
+
+	assert.Nil(t, err)
+	assert.Equal(t, usuarioNuevo.Nombre, usuarioCargado.Nombre)
 }

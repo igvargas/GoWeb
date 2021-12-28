@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"database/sql"
 	"log"
 
@@ -10,6 +11,8 @@ import (
 
 type RepositorySQL interface {
 	Store(usuario models.Usuario) (models.Usuario, error)
+	GetFullData() ([]models.Usuario, error)
+	GetOneWithContext(ctx context.Context, id int) (models.Usuario, error)
 }
 
 type repositorySQL struct{}
@@ -35,4 +38,45 @@ func (r *repositorySQL) Store(usuario models.Usuario) (models.Usuario, error) {
 	usuario.ID = int(idCreado)
 
 	return usuario, nil
+}
+
+func (r *repositorySQL) GetFullData() ([]models.Usuario, error) {
+	var misUsuarios []models.Usuario
+	db := db.StorageDB
+	var usuarioLeido models.Usuario
+	rows, err := db.Query("SELECT u.nombre, u.apellido, u.edad, c.nombre_ciudad, c.nombre_pais FROM usuarios u inner join ciudades c on u.idciudad = c.id;")
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	for rows.Next() {
+		err = rows.Scan(&usuarioLeido.Nombre, &usuarioLeido.Apellido, &usuarioLeido.Edad, &usuarioLeido.Domicilio.NombreCiudad, &usuarioLeido.Domicilio.NombrePais)
+		if err != nil {
+			log.Fatal(err)
+			return nil, err
+		}
+		misUsuarios = append(misUsuarios, usuarioLeido)
+	}
+	return misUsuarios, nil
+}
+
+func (r *repositorySQL) GetOneWithContext(ctx context.Context, id int) (models.Usuario, error) {
+	db := db.StorageDB
+	var usuarioLeido models.Usuario
+	rows, err := db.QueryContext(ctx, "SELECT id, nombre,apellido, edad FROM usuarios WHERE id = ?", id)
+
+	if err != nil {
+		log.Fatal(err)
+		return usuarioLeido, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&usuarioLeido.ID, &usuarioLeido.Nombre, &usuarioLeido.Apellido, &usuarioLeido.Edad)
+		if err != nil {
+			log.Fatal(err)
+			return usuarioLeido, err
+		}
+
+	}
+	return usuarioLeido, nil
 }

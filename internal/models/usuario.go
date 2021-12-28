@@ -9,4 +9,11 @@ type Usuario struct {
 	Altura        float64 `json:"altura"`
 	Activo        bool    `json:"activo"`
 	FechaCreacion string  `json:"fecha_creacion"`
+	Domicilio     Ciudad  `json:"domicilio"`
+}
+
+type Ciudad struct {
+	ID           int    `json:"id"`
+	NombreCiudad string `json:"nombre_ciudad"`
+	NombrePais   string `json:"nombre_pais"`
 }
