@@ -10,6 +10,7 @@ type ServiceSQL interface {
 	Store(nombre, apellido string, email string, edad int, altura float64, activo bool, fecha_creacion string) (models.Usuario, error)
 	GetFullData() ([]models.Usuario, error)
 	GetOneWithContext(ctx context.Context, id int) (models.Usuario, error)
+	GetOne(id int) models.Usuario
 }
 
 type serviceSQL struct {
@@ -29,10 +30,13 @@ func (ssql *serviceSQL) Store(nombre, apellido string, email string, edad int, a
 	return usuarioCreado, nil
 }
 
-func (ser *serviceSQL) GetFullData() ([]models.Usuario, error) {
-	return ser.repository.GetFullData()
+func (ssql *serviceSQL) GetFullData() ([]models.Usuario, error) {
+	return ssql.repository.GetFullData()
 }
 
-func (ser *serviceSQL) GetOneWithContext(ctx context.Context, id int) (models.Usuario, error) {
-	return ser.repository.GetOneWithContext(ctx, id)
+func (ssql *serviceSQL) GetOneWithContext(ctx context.Context, id int) (models.Usuario, error) {
+	return ssql.repository.GetOneWithContext(ctx, id)
+}
+func (ssql *serviceSQL) GetOne(id int) models.Usuario {
+	return ssql.repository.GetOne(id)
 }

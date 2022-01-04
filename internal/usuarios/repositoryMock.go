@@ -9,20 +9,22 @@ import (
 	"github.com/igvargas/GoWeb/pkg/db"
 )
 
-type RepositorySQL interface {
+type RepositorySQLMock interface {
 	Store(usuario models.Usuario) (models.Usuario, error)
 	GetFullData() ([]models.Usuario, error)
-	GetOne(id int) models.Usuario
 	GetOneWithContext(ctx context.Context, id int) (models.Usuario, error)
+	GetOne(id int) models.Usuario
 }
 
-type repositorySQL struct{}
-
-func NewRepositorySQL() RepositorySQL {
-	return &repositorySQL{}
+type repositorySQLMock struct {
+	db *sql.DB
 }
 
-func (r *repositorySQL) Store(usuario models.Usuario) (models.Usuario, error) {
+func NewRepositorySQLMock(db *sql.DB) RepositorySQLMock {
+	return &repositorySQLMock{db}
+}
+
+func (r *repositorySQLMock) Store(usuario models.Usuario) (models.Usuario, error) {
 	db := db.StorageDB
 
 	stmt, err := db.Prepare("INSERT INTO usuarios(nombre, apellido, email, edad, altura, activo, fecha_creacion) VALUES (?,?,?,?,?,?,?)")
@@ -41,7 +43,7 @@ func (r *repositorySQL) Store(usuario models.Usuario) (models.Usuario, error) {
 	return usuario, nil
 }
 
-func (r *repositorySQL) GetFullData() ([]models.Usuario, error) {
+func (r *repositorySQLMock) GetFullData() ([]models.Usuario, error) {
 	var misUsuarios []models.Usuario
 	db := db.StorageDB
 	var usuarioLeido models.Usuario
@@ -61,7 +63,7 @@ func (r *repositorySQL) GetFullData() ([]models.Usuario, error) {
 	return misUsuarios, nil
 }
 
-func (r *repositorySQL) GetOneWithContext(ctx context.Context, id int) (models.Usuario, error) {
+func (r *repositorySQLMock) GetOneWithContext(ctx context.Context, id int) (models.Usuario, error) {
 	db := db.StorageDB
 	var usuarioLeido models.Usuario
 	rows, err := db.QueryContext(ctx, "SELECT id, nombre,apellido, edad FROM usuarios WHERE id = ?", id)
@@ -82,10 +84,10 @@ func (r *repositorySQL) GetOneWithContext(ctx context.Context, id int) (models.U
 	return usuarioLeido, nil
 }
 
-func (r *repositorySQL) GetOne(id int) models.Usuario {
-	db := db.StorageDB
+func (r *repositorySQLMock) GetOne(id int) models.Usuario {
+
 	var personaLeida models.Usuario
-	rows, err := db.Query("SELECT id, nombre,apellido, edad FROM personas WHERE id = ?", id)
+	rows, err := r.db.Query("SELECT id, nombre,apellido, edad FROM personas WHERE id = ?", id)
 
 	if err != nil {
 		log.Fatal(err)

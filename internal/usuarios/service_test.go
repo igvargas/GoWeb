@@ -4,10 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/igvargas/GoWeb/internal/models"
+	"github.com/igvargas/GoWeb/pkg/db"
 	"github.com/igvargas/GoWeb/pkg/store"
 	"github.com/stretchr/testify/assert"
 )
@@ -226,4 +229,67 @@ func TestGetOneContextServiceSQL(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, usuarioNuevo.Nombre, usuarioCargado.Nombre)
+}
+
+func TestGetOneContextServiceSQLMock(t *testing.T) {
+	usuarioNuevo := models.Usuario{
+		Nombre: "jose",
+	}
+	db := db.StorageDB
+	repo := NewRepositorySQLMock(db)
+
+	service := NewServiceSQL(repo)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	usuarioCargado, err := service.GetOneWithContext(ctx, 2)
+
+	assert.Nil(t, err)
+	assert.Equal(t, usuarioNuevo.Nombre, usuarioCargado.Nombre)
+}
+
+func TestGetOneServiceSQLMock(t *testing.T) {
+
+	db, mock, err := sqlmock.New()
+	assert.Nil(t, err)
+	defer db.Close()
+
+	rows := sqlmock.NewRows([]string{"id", "nombre", "apellido", "email", "edad", "altura", "activo", "fecha_creacion"})
+	rows.AddRow(1, "pedro", "sanchez", "psanchez@hotmail.com", 43, 0, false, "")
+	mock.ExpectQuery("SELECT id, nombre,apellido, edad FROM usuarios WHERE id = ?").WithArgs(1).WillReturnRows(rows)
+
+	repo := NewRepositorySQLMock(db)
+
+	service := NewServiceSQL(repo)
+
+	usuarioCargado := service.GetOne(1)
+
+	assert.Nil(t, err)
+	assert.Equal(t, "pedro", usuarioCargado.Nombre)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestStoreServiceSQLTxdb(t *testing.T) {
+	newUser := models.Usuario{
+		Nombre:        "jose",
+		Apellido:      "lopez",
+		Email:         "jlopez@hotmail.com",
+		Edad:          41,
+		Altura:        1.68,
+		Activo:        true,
+		FechaCreacion: "8/05/1966",
+	}
+
+	db, err := db.InitDb()
+	assert.Nil(t, err)
+
+	repo := NewRepositorySQLMock(db)
+	defer db.Close()
+
+	service := NewServiceSQL(repo)
+
+	usuarioCreado, _ := service.Store(newUser.Nombre, newUser.Apellido, newUser.Email, newUser.Edad, newUser.Altura, newUser.Activo, newUser.FechaCreacion)
+
+	assert.Equal(t, newUser.Nombre, usuarioCreado.Nombre)
+	fmt.Println(usuarioCreado)
 }
